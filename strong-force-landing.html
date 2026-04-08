@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brett Ragozzine — Strong Force Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #050810;
+    --deep: #0a0f1e;
+    --navy: #0d1530;
+    --panel: #111827;
+    --border: rgba(255,255,255,0.07);
+    --cyan: #00e5ff;
+    --gold: #f5c842;
+    --white: #f0f4ff;
+    --muted: #8892aa;
+    --accent2: #4f8aff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Sora', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── STARFIELD ── */
+  #stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--dur) ease-in-out infinite alternate;
+    opacity: var(--op);
+  }
+  @keyframes twinkle {
+    from { opacity: var(--op); }
+    to   { opacity: calc(var(--op) * 0.2); }
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.4rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(5,8,16,0.7);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: var(--cyan);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 6rem;
+    position: relative;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .hero-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.6rem, 5vw, 4.2rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin-bottom: 1.8rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--cyan);
+  }
+  .hero-sub {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .hero-sub strong { color: var(--white); font-weight: 500; }
+  .cta-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .btn-primary {
+    padding: 0.85rem 2rem;
+    background: var(--cyan);
+    color: var(--black);
+    font-family: 'Sora', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-ghost {
+    padding: 0.85rem 2rem;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Sora', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-ghost:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
+
+  /* ── ORBIT VISUAL ── */
+  .hero-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeIn 1.2s 0.6s forwards;
+  }
+  .orbit-system {
+    position: relative;
+    width: 340px;
+    height: 340px;
+  }
+  .orbit-core {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #1a3a6e, #050810);
+    border: 1px solid rgba(0,229,255,0.4);
+    box-shadow: 0 0 40px rgba(0,229,255,0.15), inset 0 0 20px rgba(0,229,255,0.05);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .orbit-core-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    color: var(--cyan);
+    text-align: center;
+    line-height: 1.4;
+  }
+  .orbit-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px dashed rgba(0,229,255,0.15);
+  }
+  .ring-1 { width: 160px; height: 160px; animation: rotate 12s linear infinite; }
+  .ring-2 { width: 240px; height: 240px; animation: rotate 20s linear infinite reverse; }
+  .ring-3 { width: 320px; height: 320px; animation: rotate 30s linear infinite; }
+
+  .orbit-node {
+    position: absolute;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 1px solid rgba(0,229,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  /* place nodes on rings */
+  .ring-1 .orbit-node { top: -18px; left: 50%; transform: translateX(-50%); }
+  .ring-2 .orbit-node:nth-child(1) { top: -18px; left: 50%; transform: translateX(-50%); }
+  .ring-2 .orbit-node:nth-child(2) { bottom: -18px; left: 50%; transform: translateX(-50%); }
+  .ring-3 .orbit-node:nth-child(1) { top: -18px; left: 50%; transform: translateX(-50%); }
+  .ring-3 .orbit-node:nth-child(2) { top: 50%; right: -18px; transform: translateY(-50%); }
+  .ring-3 .orbit-node:nth-child(3) { bottom: -18px; left: 50%; transform: translateX(-50%); }
+
+  @keyframes rotate { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ── SECTION BASE ── */
+  section { padding: 7rem 0; position: relative; z-index: 2; }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 1.2rem;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    line-height: 1.15;
+    margin-bottom: 1.2rem;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+  .section-sub {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--muted);
+    max-width: 560px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent);
+  }
+
+  /* ── WHAT I BUILD ── */
+  .build-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    margin-top: 4rem;
+    background: var(--border);
+  }
+  .build-card {
+    background: var(--deep);
+    padding: 2.5rem 2rem;
+    transition: background 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .build-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--cyan);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .build-card:hover { background: var(--navy); }
+  .build-card:hover::before { transform: scaleX(1); }
+  .build-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--cyan);
+    opacity: 0.5;
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.1em;
+  }
+  .build-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+  .build-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.35rem;
+    margin-bottom: 0.8rem;
+    color: var(--white);
+  }
+  .build-desc {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--muted);
+  }
+  .build-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1.2rem;
+  }
+  .build-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 2px;
+  }
+
+  /* ── CASE STUDIES ── */
+  .cases-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: end;
+    margin-bottom: 4rem;
+  }
+  .case-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+  .case-item {
+    background: var(--deep);
+    padding: 2.5rem 2.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+    align-items: start;
+    transition: background 0.2s;
+    cursor: default;
+  }
+  .case-item:hover { background: var(--navy); }
+  .case-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    color: rgba(0,229,255,0.12);
+    line-height: 1;
+    min-width: 60px;
+    text-align: right;
+    padding-top: 4px;
+  }
+  .case-content {}
+  .case-co {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .case-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.25rem;
+    margin-bottom: 0.7rem;
+  }
+  .case-desc {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--muted);
+  }
+  .case-result {
+    margin-top: 0.8rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--cyan);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── SKILLS MATRIX ── */
+  .skills-section { background: var(--deep); }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 4rem;
+  }
+  .skill-group {}
+  .skill-group-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .skill-list { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+  .skill-list li {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s;
+  }
+  .skill-list li:hover { color: var(--white); }
+  .skill-list li::before {
+    content: '';
+    display: inline-block;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--cyan);
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+  .skill-list li.new { color: rgba(245,200,66,0.8); }
+  .skill-list li.new::before { background: var(--gold); opacity: 1; }
+
+  /* ── PRODUCTS ── */
+  .products-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5px;
+    margin-top: 4rem;
+    background: var(--border);
+  }
+  .product-card {
+    background: var(--deep);
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s;
+  }
+  .product-card:hover { background: var(--navy); }
+  .product-card.featured {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 100%);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  .product-badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid rgba(0,229,255,0.3);
+    color: var(--cyan);
+    margin-bottom: 1.2rem;
+  }
+  .product-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+  }
+  .product-desc {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .product-price {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+  .product-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .price-tier {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: rgba(0,0,0,0.3);
+    border-left: 2px solid rgba(0,229,255,0.2);
+  }
+  .price-tier.highlight { border-left-color: var(--cyan); background: rgba(0,229,255,0.05); }
+  .tier-name { font-size: 0.82rem; color: var(--muted); }
+  .tier-price {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--white);
+  }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 5fr 4fr;
+    gap: 6rem;
+    align-items: start;
+  }
+  .about-body {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: var(--muted);
+  }
+  .about-body p + p { margin-top: 1.2rem; }
+  .about-body strong { color: var(--white); font-weight: 500; }
+  .stats-panel { display: flex; flex-direction: column; gap: 1px; background: var(--border); margin-top: 0.5rem; }
+  .stat-item {
+    background: var(--deep);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .stat-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem;
+    color: var(--white);
+    line-height: 1;
+  }
+  .stat-number span { color: var(--cyan); }
+  .stat-label { font-size: 0.8rem; color: var(--muted); }
+
+  /* ── CTA ── */
+  .cta-section {
+    text-align: center;
+    padding: 8rem 0;
+    position: relative;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(0,229,255,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    margin-bottom: 1.2rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.1;
+  }
+  .cta-title em { font-style: italic; color: var(--cyan); }
+  .cta-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cta-links {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-top: 1.5rem;
+  }
+  .cta-links a { color: var(--cyan); text-decoration: none; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+  .footer-logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  .footer-copy {
+    font-size: 0.75rem;
+    color: rgba(136,146,170,0.5);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-visual { display: none; }
+    .build-grid { grid-template-columns: 1fr; }
+    .cases-header { grid-template-columns: 1fr; gap: 2rem; }
+    .skills-grid { grid-template-columns: repeat(2,1fr); }
+    .products-grid { grid-template-columns: 1fr; }
+    .product-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .case-item { grid-template-columns: 1fr; }
+    .case-number { font-size: 1.5rem; min-width: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- STARFIELD -->
+<div id="stars"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">STRONG FORCE ANALYTICS</a>
+  <ul class="nav-links">
+    <li><a href="#build">What I Build</a></li>
+    <li><a href="#work">Case Studies</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <p class="hero-eyebrow">// Brett Ragozzine, PhD &nbsp;·&nbsp; Strong Force Analytics</p>
+        <h1 class="hero-title">
+          AI Systems that<br>
+          <em>Think, Decide,</em><br>
+          and Scale
+        </h1>
+        <p class="hero-sub">
+          I design and deploy <strong>agentic AI systems, automated workflows, and intelligent pipelines</strong> that run without you. PhD physicist. 20 years applied ML. Now building the infrastructure that makes data science disappear into the background — and revenue appear in the foreground.
+        </p>
+        <div class="cta-row">
+          <a href="#work" class="btn-primary">See the Work</a>
+          <a href="#contact" class="btn-ghost">Let's Talk</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="orbit-system">
+          <div class="orbit-ring ring-3">
+            <div class="orbit-node">🤖</div>
+            <div class="orbit-node">📈</div>
+            <div class="orbit-node">🔁</div>
+          </div>
+          <div class="orbit-ring ring-2">
+            <div class="orbit-node">⚡</div>
+            <div class="orbit-node">🧠</div>
+          </div>
+          <div class="orbit-ring ring-1">
+            <div class="orbit-node">📡</div>
+          </div>
+          <div class="orbit-core">
+            <div class="orbit-core-label">STRONG<br>FORCE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WHAT I BUILD -->
+<section id="build">
+  <div class="container">
+    <p class="section-label">// What I Build</p>
+    <h2 class="section-title">From Data to <em>Decisions</em><br>— Automatically</h2>
+    <p class="section-sub">Three layers. Each one more autonomous than the last. Most clients start with a workflow and graduate to agents.</p>
+
+    <div class="build-grid">
+      <div class="build-card">
+        <div class="build-num">01 ──────</div>
+        <div class="build-icon">⚙️</div>
+        <h3 class="build-title">Automated Workflows</h3>
+        <p class="build-desc">Multi-step pipelines that pull data, run models, detect patterns, and deliver actionable outputs — on a schedule, without human intervention. Built once, runs forever.</p>
+        <div class="build-tag-list">
+          <span class="build-tag">ETL Pipelines</span>
+          <span class="build-tag">ML Scoring</span>
+          <span class="build-tag">Auto Reports</span>
+          <span class="build-tag">Alert Systems</span>
+        </div>
+      </div>
+      <div class="build-card">
+        <div class="build-num">02 ──────</div>
+        <div class="build-icon">🤖</div>
+        <h3 class="build-title">AI Agents</h3>
+        <p class="build-desc">Goal-driven systems that make decisions, use tools, handle exceptions, and escalate only when necessary. They work while you sleep. Powered by LLMs + custom logic.</p>
+        <div class="build-tag-list">
+          <span class="build-tag">LLM-Powered</span>
+          <span class="build-tag">Tool Use</span>
+          <span class="build-tag">Decision Trees</span>
+          <span class="build-tag">Auto-Recovery</span>
+        </div>
+      </div>
+      <div class="build-card">
+        <div class="build-num">03 ──────</div>
+        <div class="build-icon">🌐</div>
+        <h3 class="build-title">Agentic Systems</h3>
+        <p class="build-desc">Orchestrated networks of AI agents collaborating toward a shared goal. Multi-agent coordination, specialized roles, shared memory. This is the frontier — and where the biggest leverage lives.</p>
+        <div class="build-tag-list">
+          <span class="build-tag">Multi-Agent</span>
+          <span class="build-tag">Orchestration</span>
+          <span class="build-tag">Shared Context</span>
+          <span class="build-tag">Continuous Ops</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CASE STUDIES -->
+<section id="work" style="background: var(--deep);">
+  <div class="container">
+    <div class="cases-header">
+      <div>
+        <p class="section-label">// Case Studies</p>
+        <h2 class="section-title">Problems Solved.<br><em>Results Delivered.</em></h2>
+      </div>
+      <p class="section-sub" style="margin-top: 0.5rem;">Real projects. Real outcomes. The pattern is always the same: find the data nobody is looking at, build the system that acts on it automatically.</p>
+    </div>
+
+    <div class="case-list">
+      <div class="case-item">
+        <div class="case-number">01</div>
+        <div class="case-content">
+          <p class="case-co">Finicity / Mastercard · Fintech</p>
+          <h3 class="case-title">Open Banking Transaction Intelligence at Scale</h3>
+          <p class="case-desc">Built and led two data science teams to train LLMs for transaction categorization, income calculation, and entity recognition across multiple countries and languages. Designed a scalable architecture that expanded into Canada, Australia, and Brazil without proportional team growth.</p>
+          <p class="case-result">→ Patent issued · Expanded to 3 new markets · Semi-automated labeling system reduced data ops load by 60%+</p>
+        </div>
+      </div>
+
+      <div class="case-item">
+        <div class="case-number">02</div>
+        <div class="case-content">
+          <p class="case-co">Purple · E-Commerce</p>
+          <h3 class="case-title">Predicting the True Cost of a Backorder</h3>
+          <p class="case-desc">Built a model quantifying exactly how delayed delivery timelines affected sales conversion and customer lifetime value — dollar amounts that were previously invisible to leadership. Also delivered Experian Mosaic targeting models to improve ROAS and introduced Tableau across the organization.</p>
+          <p class="case-result">→ Delivered first data-driven ROAS model · Backorder impact quantified in dollars for executive decisions</p>
+        </div>
+      </div>
+
+      <div class="case-item">
+        <div class="case-number">03</div>
+        <div class="case-content">
+          <p class="case-co">Wrench.ai · MarTech</p>
+          <h3 class="case-title">Personality-Based Marketing Personalization Engine</h3>
+          <p class="case-desc">Invented and patented models that predicted customer personality from text, then used those profiles to recommend ideal messaging strategy, contact channel, and product affinity per lead. Built churn prediction, lead scoring, and a product recommender — all wired into a single customer intelligence platform.</p>
+          <p class="case-result">→ Patent issued · Full customer intelligence stack deployed in production</p>
+        </div>
+      </div>
+
+      <div class="case-item">
+        <div class="case-number">04</div>
+        <div class="case-content">
+          <p class="case-co">Grocery Retail Client · Strong Force Analytics</p>
+          <h3 class="case-title">Intraday Restocking Recommendation Engine</h3>
+          <p class="case-desc">Retailers were losing sales daily to out-of-stock events that nobody saw coming. Built a recommendation system that predicted restocking events throughout the day based on sales velocity, time patterns, and inventory data — surfacing what the data already knew before shelves emptied.</p>
+          <p class="case-result">→ Measurable same-day sales lift · Reduced manual restocking guesswork</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SKILLS -->
+<section class="skills-section">
+  <div class="container">
+    <p class="section-label">// Technical Stack</p>
+    <h2 class="section-title">Deep Roots.<br><em>New Edges.</em></h2>
+    <p class="section-sub">20 years of applied ML across fintech, retail, trading, and astrophysics — now extended into agentic AI systems and autonomous trading software.</p>
+
+    <div class="skills-grid">
+      <div class="skill-group">
+        <div class="skill-group-title">AI & Agents</div>
+        <ul class="skill-list">
+          <li class="new">Agentic Systems (Claude, GPT)</li>
+          <li class="new">Multi-Agent Orchestration</li>
+          <li class="new">LLM Workflow Design</li>
+          <li class="new">Prompt Engineering</li>
+          <li>NLP / LDA / Text Mining</li>
+          <li>Recommendation Engines</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Machine Learning</div>
+        <ul class="skill-list">
+          <li>Random Forest / Neural Nets</li>
+          <li>Supervised & Unsupervised ML</li>
+          <li>Clustering (high-dim vectors)</li>
+          <li>Predictive Modeling</li>
+          <li>Time Series Analysis</li>
+          <li>Computer Vision (image pipelines)</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Data & Infrastructure</div>
+        <ul class="skill-list">
+          <li>Python · R · SQL · Perl</li>
+          <li>AWS · Hadoop · Hive · HBase</li>
+          <li>Neo4j · PostgreSQL · MySQL</li>
+          <li>ETL Pipelines · Data Warehousing</li>
+          <li>Tableau · Power BI · D3</li>
+          <li>GitHub · Agile Delivery</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Trading & Quant</div>
+        <ul class="skill-list">
+          <li class="new">Automated Trading Systems</li>
+          <li class="new">NinjaTrader 8 (NinjaScript/C#)</li>
+          <li class="new">Licensed SaaS Strategy Products</li>
+          <li>PineScript · MQL4/5</li>
+          <li>Order Flow Analysis</li>
+          <li>Market Structure Algorithms</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top: 2rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: rgba(0,229,255,0.5); letter-spacing: 0.1em;">
+      ◆ = actively building now &nbsp;|&nbsp; <span style="color: var(--gold);">gold dots</span> = new capabilities added 2025–2026
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PRODUCTS -->
+<section id="products" style="background: var(--black);">
+  <div class="container">
+    <p class="section-label">// Products</p>
+    <h2 class="section-title">Built Once.<br><em>Sold Repeatedly.</em></h2>
+    <p class="section-sub">The same leverage I apply for clients, applied to my own products. Automated trading software for NinjaTrader 8, deployed with a custom licensing and subscription system.</p>
+
+    <div class="products-grid">
+      <div class="product-card featured">
+        <div>
+          <div class="product-badge">Flagship · All-Access</div>
+          <h3 class="product-name">Strong Force Trading Suite</h3>
+          <p class="product-desc">A complete ecosystem of automated trading strategies and order-flow analysis tools for NinjaTrader 8. Includes Smart Money Concepts strategies, Opening Range Breakout automation, Effort vs Result order-flow divergence detection, Volume Profile with heatmap, and Footprint charting — all with professional WPF dashboards and Airtable-backed licensing.</p>
+          <p class="product-price">Indicators · Strategies · Full Order Management · Live Licensing System</p>
+        </div>
+        <div class="product-visual">
+          <div class="price-tier">
+            <span class="tier-name">Starter — Indicators</span>
+            <span class="tier-price">$49 / mo</span>
+          </div>
+          <div class="price-tier">
+            <span class="tier-name">Trader — Strategies</span>
+            <span class="tier-price">$79 / mo</span>
+          </div>
+          <div class="price-tier highlight">
+            <span class="tier-name">Pro — All Access</span>
+            <span class="tier-price">$149 / mo</span>
+          </div>
+          <div class="price-tier">
+            <span class="tier-name">All-Access Lifetime</span>
+            <span class="tier-price">$999 once</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-badge">Standalone</div>
+        <h3 class="product-name">ORB Strategy</h3>
+        <p class="product-desc">Opening Range Breakout with range-percentage targets, pullback re-entry system, and full risk controls. Built around the open — one of the highest-probability windows in futures trading.</p>
+        <p class="product-price" style="margin-top: 1.5rem;">$399 lifetime · $79/mo</p>
+      </div>
+
+      <div class="product-card">
+        <div class="product-badge">Standalone</div>
+        <h3 class="product-name">EVR Strategy</h3>
+        <p class="product-desc">Effort vs Result — trades delta divergence and continuation signals with 7 calculation modes and a modular filter system. Order-flow intelligence, automated.</p>
+        <p class="product-price" style="margin-top: 1.5rem;">$499 lifetime · $79/mo</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<section id="about" style="background: var(--deep);">
+  <div class="container">
+    <p class="section-label">// About</p>
+    <div class="about-grid">
+      <div>
+        <h2 class="section-title" style="margin-bottom: 2rem;">The Long Way<br>to <em>the Right Place</em></h2>
+        <div class="about-body">
+          <p>I started by modeling <strong>dark matter in galaxy clusters</strong> using weak gravitational lensing — writing image processing pipelines to analyze data from the Hubble Space Telescope, speeding up established scientific software by 450–5000%, and earning a PhD in Physics and Astronomy from Ohio University.</p>
+          <p>That trained something useful: the ability to <strong>find signal in noise at massive scale</strong>, formalize problems mathematically, and build systems that actually run in production — not just in notebooks.</p>
+          <p>I took that into data science — Zions Bank, InsideSales, Purple, CompuCom, Wrench.ai — and eventually to <strong>Director of Data Science at Finicity/Mastercard</strong>, where I hired and led two teams, earned two patents, and expanded ML systems into international markets.</p>
+          <p>Now I run <strong>Strong Force Analytics</strong> with a development team in Bangladesh, building AI workflows, agentic systems, and automated trading products. The goal isn't to do more data science. It's to <strong>build systems that do it — while I scale.</strong></p>
+        </div>
+      </div>
+      <div>
+        <div class="stats-panel">
+          <div class="stat-item">
+            <div class="stat-number">20<span>+</span></div>
+            <div class="stat-label">Years applied ML &amp; data science</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">2</div>
+            <div class="stat-label">Patents issued (fintech ML, martech AI)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">78</div>
+            <div class="stat-label">NinjaTrader software files shipped</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">5<span>+</span></div>
+            <div class="stat-label">Industries: fintech, retail, pharma, trading, astro</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">PhD</div>
+            <div class="stat-label">Physics &amp; Astronomy, Ohio University</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="contact" class="cta-section">
+  <div class="container">
+    <h2 class="cta-title">Ready to Stop<br>Doing It <em>Manually?</em></h2>
+    <p class="cta-sub">Whether you need a workflow that runs without you, an agent that makes decisions, or a complete agentic system — let's talk about what's possible.</p>
+    <a href="mailto:brag42@gmail.com" class="btn-primary">Start the Conversation</a>
+    <div class="cta-links" style="margin-top: 2rem;">
+      <a href="https://linkedin.com/in/brettragozzine">LinkedIn</a>
+      &nbsp;·&nbsp;
+      <a href="mailto:brag42@gmail.com">brag42@gmail.com</a>
+      &nbsp;·&nbsp;
+      <a href="tel:8017178445">(801) 717-8445</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">STRONG FORCE ANALYTICS &nbsp;·&nbsp; BRETT RAGOZZINE, PHD</div>
+  <div class="footer-copy">© 2026 Strong Force Analytics. All systems go.</div>
+</footer>
+
+<script>
+  // Starfield
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 180; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2 + 0.5;
+    const op = Math.random() * 0.5 + 0.1;
+    s.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      top: ${Math.random() * 100}%;
+      left: ${Math.random() * 100}%;
+      --op: ${op};
+      --dur: ${Math.random() * 4 + 2}s;
+      animation-delay: ${Math.random() * 4}s;
+    `;
+    container.appendChild(s);
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.build-card, .case-item, .product-card, .stat-item, .skill-group').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(16px)';
+    el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
